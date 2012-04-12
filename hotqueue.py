@@ -214,8 +214,8 @@ class HotBuffer(object):
         
         It is possible to add more items than the defined limit when adding in
         bulk. If your buffer has a limit of 500 items, currently contains
-        499 items, and you add 5 items, 504 items will be passed to the callback
-        at once.
+        499 items, and you add 5 items in bulk, 504 items will be passed to the
+        callback at once.
         """
         self.__items.extend(args)
         if len(self) >= self.limit:
