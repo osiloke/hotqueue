@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """HotQueue is a Python library that allows you to use Redis as a message queue
 within your Python programs.
 """
@@ -103,7 +102,22 @@ class HotQueue(object):
         if msg is not None and self.serializer is not None:
             msg = self.serializer.loads(msg)
         return msg
-    
+
+    def put_again(self, *msgs):
+        """Put one or more messages onto the queue. Used to requeue an element if it fails. Example:
+
+        >>> queue.put_again("my message")
+        >>> queue.put_again("another message")
+
+        To put messages onto the queue in bulk, which can be significantly
+        faster if you have a large number of messages:
+
+        >>> queue.put_again("my message", "another message", "third message")
+        """
+        if self.serializer is not None:
+            msgs = map(self.serializer.dumps, msgs)
+        self.__redis.lpush(self.key, *msgs)
+
     def put(self, *msgs):
         """Put one or more messages onto the queue. Example:
         
