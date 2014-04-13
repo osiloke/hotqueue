@@ -39,10 +39,14 @@ class HotQueue(object):
         :attr:`host`, :attr:`port`, :attr:`db`
     """
     
-    def __init__(self, name, serializer=pickle, **kwargs):
+    def __init__(self, name, serializer=pickle, redis_connection=None, **kwargs):
+        self.group_name = kwargs.pop("group", "hotqueue")
         self.name = name
         self.serializer = serializer
-        self.__redis = Redis(**kwargs)
+        if redis_connection:
+            self.__redis = redis_connection
+        else:
+            self.__redis = Redis(**kwargs)
     
     def __len__(self):
         return self.__redis.llen(self.key)
@@ -50,7 +54,7 @@ class HotQueue(object):
     @property
     def key(self):
         """Return the key name used to store this queue in Redis."""
-        return key_for_name(self.name)
+        return "%s:%s" % (self.group_name, self.name)
     
     def clear(self):
         """Clear the queue of all messages, deleting the Redis key."""
