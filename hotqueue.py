@@ -59,7 +59,11 @@ class HotQueue(object):
     def clear(self):
         """Clear the queue of all messages, deleting the Redis key."""
         self.__redis.delete(self.key)
-    
+
+    def clear_value(self, value):
+        """Removes any occurence of an item from queue"""
+        self.__redis.lrem(self.key, 0, value)
+
     def consume(self, **kwargs):
         """Return a generator that yields whenever a message is waiting in the
         queue. Will block otherwise. Example:
